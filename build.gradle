@@ -1,0 +1,70 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+    }
+}
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = sourceCompatibility
+version = '1.0'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "http://repo.spring.io/snapshot" }
+    maven { url "http://repo.spring.io/milestone" }
+}
+
+	dependencies {
+	    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+	    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$bootVersion"
+	    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$bootVersion"
+	    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "$bootVersion"
+	    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.10'
+	    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.39'
+	    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '1.4.0.RELEASE'
+	}
+task build_spring(type: Jar) {
+	println 'building spring app'
+	manifest {
+        attributes 'Main-Class': 'org.marketplace.Main'
+    }
+   	baseName = project.name + '-all'
+    
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+model {
+   tasks {
+       wrapper {
+           gradleVersion = '3.0'
+       }
+   }
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
